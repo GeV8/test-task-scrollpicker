@@ -1,8 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import "./style.css";
 
 const ITEM_HEIGHT = 50;
-
 
 const ScrollColumn = (
     {
@@ -20,7 +19,10 @@ const ScrollColumn = (
     const scrollEndTimer = useRef<number | null>(null);
     const isUserScrolling = useRef(false);
 
-    const clamp = (i: number) => Math.max(0, Math.min(values.length - 1, i));
+    const extendedValues = useMemo(() => [...values, ...values, ...values], [values]);
+    const originalLength = values.length;
+
+    const clamp = (i: number) => Math.max(0, Math.min(extendedValues.length - 1, i));
     const indexFromScroll = (st: number) => clamp(Math.round(st / ITEM_HEIGHT));
     const scrollToIndex = (i: number, behavior: ScrollBehavior = "smooth") => {
         containerRef.current?.scrollTo({ top: i * ITEM_HEIGHT, behavior });
@@ -30,26 +32,33 @@ const ScrollColumn = (
         if (!containerRef.current) return;
         const idx = values.indexOf(selected);
         if (idx < 0) return;
-        if (isUserScrolling.current) return;
-        const target = idx * ITEM_HEIGHT;
-        if (Math.abs(containerRef.current.scrollTop - target) > 1) {
-            scrollToIndex(idx, "auto");
-        }
-    }, [selected, values]);
+        scrollToIndex(idx + originalLength, "auto");
+    }, [selected, values, originalLength]);
 
     const handleScroll = () => {
         if (!containerRef.current) return;
         isUserScrolling.current = true;
 
-        const scrollTop = containerRef.current.scrollTop;
-        const idx = indexFromScroll(scrollTop);
+        let scrollTop = containerRef.current.scrollTop;
+        const totalHeight = ITEM_HEIGHT * originalLength;
+
+        // Зацикливание: если дошли до верхнего или нижнего дубликата
+        if (scrollTop >= totalHeight * 2) {
+            containerRef.current.scrollTop = scrollTop - totalHeight;
+            scrollTop -= totalHeight;
+        } else if (scrollTop < totalHeight) {
+            containerRef.current.scrollTop = scrollTop + totalHeight;
+            scrollTop += totalHeight;
+        }
+
+        const idx = indexFromScroll(scrollTop) % originalLength;
         onChange(values[idx]);
 
         if (scrollEndTimer.current) window.clearTimeout(scrollEndTimer.current);
         scrollEndTimer.current = window.setTimeout(() => {
             isUserScrolling.current = false;
-            const snapIdx = indexFromScroll(containerRef.current!.scrollTop);
-            scrollToIndex(snapIdx);
+            const snapIdx = indexFromScroll(containerRef.current!.scrollTop) % originalLength;
+            scrollToIndex(snapIdx + originalLength, "smooth"); // snap к середине
         }, 80);
     };
 
@@ -63,7 +72,7 @@ const ScrollColumn = (
             onScroll={handleScroll}
         >
             <div className="scrollcolumn-inner">
-                {values.map((val, i) => (
+                {extendedValues.map((val, i) => (
                     <div
                         key={i}
                         role="option"
