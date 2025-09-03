@@ -49,6 +49,15 @@
     }
 
 }
+@media (min-width: 900px) {
+    .scrollcolumn-item {
+        font-size: 2vw;
+    }
+    .scrollcolumn-item-selected {
+        font-size: 2vw;
+    }
+
+}
 @media (min-width: 1200px) {
     .scrollcolumn-item {
         font-size: 1vw;

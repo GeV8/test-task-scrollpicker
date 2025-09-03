@@ -1,4 +1,5 @@
 .scrollpicker-root {
+    font-family: 'Open Sans', sans-serif;
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -29,6 +30,7 @@
 }
 
 .scrollpicker-submit {
+    font-family: 'Open Sans', sans-serif;
     margin-top: 20px;
     padding: 10px 20px;
     font-size: 18px;
