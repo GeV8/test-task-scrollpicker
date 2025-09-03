@@ -5,9 +5,9 @@ import "./style.css";
 const ScrollPicker = () => {
     const searchParams = new URLSearchParams(window.location.search);
 
-    const dates = useMemo(() => Array.from({length: 1000}, (_, i) => {
+    const dates = useMemo(() => Array.from({length: 300}, (_, i) => {
         const d = new Date();
-        d.setDate(d.getDate() - 500 + i);
+        d.setDate(d.getDate() - 150 + i);
         if (i === 500) return 'Today'
         return d.toDateString().slice(0, 10);
     }), []);

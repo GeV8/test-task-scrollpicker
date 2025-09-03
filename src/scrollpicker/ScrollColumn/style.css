@@ -47,7 +47,6 @@
 .scrollcolumn-item-selected {
     font-weight: normal;
     color: #000;
-    transform: scale(1.04);
 }
 
 @media (min-width: 300px) {

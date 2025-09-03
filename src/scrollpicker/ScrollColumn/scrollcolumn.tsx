@@ -37,6 +37,22 @@ const ScrollColumn = (
         }
     }, [selected, values]);
 
+    const handleScroll = () => {
+        if (!containerRef.current) return;
+        isUserScrolling.current = true;
+
+        const scrollTop = containerRef.current.scrollTop;
+        const idx = indexFromScroll(scrollTop);
+        onChange(values[idx]);
+
+        if (scrollEndTimer.current) window.clearTimeout(scrollEndTimer.current);
+        scrollEndTimer.current = window.setTimeout(() => {
+            isUserScrolling.current = false;
+            const snapIdx = indexFromScroll(containerRef.current!.scrollTop);
+            scrollToIndex(snapIdx);
+        }, 80);
+    };
+
     return (
         <div
             ref={containerRef}
@@ -44,22 +60,7 @@ const ScrollColumn = (
             role="listbox"
             tabIndex={0}
             aria-label="Scroll picker column"
-            onScroll={() => {
-                if (!containerRef.current) return;
-                isUserScrolling.current = true;
-
-                const sc = containerRef.current.scrollTop;
-                const idx = indexFromScroll(sc);
-                onChange(values[idx]);
-
-                if (scrollEndTimer.current) window.clearTimeout(scrollEndTimer.current);
-                scrollEndTimer.current = window.setTimeout(() => {
-                    isUserScrolling.current = false;
-                    // Снэп к ближайшему элементу
-                    const snapIdx = indexFromScroll(containerRef.current!.scrollTop);
-                    scrollToIndex(snapIdx);
-                }, 80);
-            }}
+            onScroll={handleScroll}
         >
             <div className="scrollcolumn-inner">
                 {values.map((val, i) => (
