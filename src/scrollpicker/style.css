@@ -1,3 +1,33 @@
-.container {
-    color: red;
+.scrollpicker-root {
+    text-align: center;
+    padding: 20px;
+}
+
+.scrollpicker-columns {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    position: relative;
+    border-top: none;
+    border-bottom: none;
+}
+
+
+.scrollpicker-selection {
+    pointer-events: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 50px;
+    margin-top: -25px;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.02) inset, 0 -8px 16px rgba(0,0,0,0.02) inset;
+}
+
+.scrollpicker-submit {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 18px;
 }

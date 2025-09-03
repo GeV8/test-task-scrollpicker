@@ -1,106 +1,46 @@
-import React, {useEffect, useRef, useState} from "react";
-
-const ITEM_HEIGHT = 40;
-const VISIBLE_ITEMS = 5;
-
-const ScrollColumn = (
-    {
-        values,
-        selected,
-        onChange,
-    }:
-    {
-        values: string[];
-        selected: string;
-        onChange: (val: string) => void;
-    }
-) => {
-    const containerRef = useRef<HTMLDivElement>(null);
-
-
-    return (
-        <div
-            ref={containerRef}
-            onWheel={(e) => {
-            }}
-            style={{
-                height: ITEM_HEIGHT * VISIBLE_ITEMS,
-                overflowY: "scroll",
-                textAlign: "center",
-                scrollbarWidth: "none",
-            }}
-        >
-            <div
-                style={{paddingTop: ITEM_HEIGHT * 2, paddingBottom: ITEM_HEIGHT * 2}}
-            >
-                {values.map((val, i) => (
-                    <div
-                        key={i}
-                        style={{
-                            height: ITEM_HEIGHT,
-                            width: '200px',
-                            lineHeight: ITEM_HEIGHT + "px",
-                            fontSize: selected === val ? "20px" : "16px",
-                            fontWeight: selected === val ? "bold" : "normal",
-                            color: selected === val ? "#000" : "#aaa",
-                        }}
-                    >
-                        {val}
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-};
+import React, {useMemo, useState} from "react";
+import ScrollColumn from "./ScrollColumn/scrollcolumn.tsx";
+import "./style.css";
 
 const ScrollPicker = () => {
     const searchParams = new URLSearchParams(window.location.search);
 
-    const initialDate = searchParams.get("date") || "Today";
-    const initialHour = searchParams.get("hour") || "5";
-    const initialMinute = searchParams.get("minute") || "00";
-    const initialAmPm = searchParams.get("ampm") || "PM";
-
-    const [day, setDay] = useState(initialDate);
-    const [hour, setHour] = useState(initialHour);
-    const [minute, setMinute] = useState(initialMinute);
-    const [ampm, setAmPm] = useState(initialAmPm);
-
-    const dates = Array.from({length: 100}, (_, i) => {
+    const dates = useMemo(() => Array.from({length: 1000}, (_, i) => {
         const d = new Date();
-        d.setDate(d.getDate() + i);
-        return d.toDateString();
-    });
+        d.setDate(d.getDate() - 500 + i);
+        if (i === 500) return 'Today'
+        return d.toDateString().slice(0, 10);
+    }), []);
+    const hours = useMemo(() => Array.from({length: 12}, (_, i) => (i + 1).toString()), []);
+    const minutes= useMemo(() => Array.from({length: 12}, (_, i) => (i * 5).toString().padStart(2, "0")), []);
+    const ampmOptions= useMemo(() => ["AM", "PM"], []);
 
-    const hours = Array.from({length: 12}, (_, i) => (i + 1).toString());
-    const minutes = Array.from({length: 60}, (_, i) =>
-        i.toString().padStart(2, "0")
-    );
-    const ampmOptions = ["AM", "PM"];
+    const qpDate = searchParams.get("date");
+    const qpHour = searchParams.get("hour");
+    const qpMinute = searchParams.get("minute");
+    const qpAmPm = searchParams.get("ampm");
+
+    const [day, setDay] = useState(dates.includes(qpDate || "") ? (qpDate as string) : dates[50]);
+    const [hour, setHour] = useState(hours.includes(qpHour || "") ? (qpHour as string) : hours[0]);
+    const [minute, setMinute] = useState(minutes.includes(qpMinute || "") ? (qpMinute as string) : minutes[0]);
+    const [ampm, setAmPm] = useState(ampmOptions.includes(qpAmPm || "") ? (qpAmPm as string) : ampmOptions[0]);
 
     const handleSubmit = () => {
         console.log(`Selected: ${day}, ${hour}:${minute} ${ampm}`);
     };
 
     return (
-        <div style={{textAlign: "center", padding: 20}}>
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    gap: 10,
-                    borderTop: "1px solid #ddd",
-                    borderBottom: "1px solid #ddd",
-                }}
-            >
+        <div className="scrollpicker-root">
+            <div className="scrollpicker-columns">
                 <ScrollColumn values={dates} selected={day} onChange={setDay}/>
                 <ScrollColumn values={hours} selected={hour} onChange={setHour}/>
                 <ScrollColumn values={minutes} selected={minute} onChange={setMinute}/>
                 <ScrollColumn values={ampmOptions} selected={ampm} onChange={setAmPm}/>
+                <div className="scrollpicker-selection" aria-hidden="true" />
             </div>
             <button
                 onClick={handleSubmit}
-                style={{marginTop: 20, padding: "10px 20px", fontSize: "18px"}}
+                className="scrollpicker-submit"
             >
                 Submit
             </button>
