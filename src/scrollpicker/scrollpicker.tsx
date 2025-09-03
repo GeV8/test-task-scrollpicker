@@ -8,7 +8,7 @@ const ScrollPicker = () => {
     const dates = useMemo(() => Array.from({length: 300}, (_, i) => {
         const d = new Date();
         d.setDate(d.getDate() - 150 + i);
-        if (i === 500) return 'Today'
+        if (i === 150) return 'Today'
         return d.toDateString().slice(0, 10);
     }), []);
     const hours = useMemo(() => Array.from({length: 12}, (_, i) => (i + 1).toString()), []);
@@ -20,7 +20,7 @@ const ScrollPicker = () => {
     const qpMinute = searchParams.get("minute");
     const qpAmPm = searchParams.get("ampm");
 
-    const [day, setDay] = useState(dates.includes(qpDate || "") ? (qpDate as string) : dates[50]);
+    const [day, setDay] = useState(dates.includes(qpDate || "") ? (qpDate as string) : dates[150]);
     const [hour, setHour] = useState(hours.includes(qpHour || "") ? (qpHour as string) : hours[0]);
     const [minute, setMinute] = useState(minutes.includes(qpMinute || "") ? (qpMinute as string) : minutes[0]);
     const [ampm, setAmPm] = useState(ampmOptions.includes(qpAmPm || "") ? (qpAmPm as string) : ampmOptions[0]);

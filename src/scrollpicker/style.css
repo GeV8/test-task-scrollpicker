@@ -21,8 +21,8 @@
     top: 50%;
     height: 50px;
     margin-top: -25px;
-    border-top: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
+    border-top: 1px solid #000000;
+    border-bottom: 1px solid #000000;
     box-shadow: 0 8px 16px rgba(0,0,0,0.02) inset, 0 -8px 16px rgba(0,0,0,0.02) inset;
 }
 
